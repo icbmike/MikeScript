@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "MikeScriptInterpreter": {
+      "commandName": "Project",
+      "commandLineArgs": "./test.ms"
+    }
+  }
+}

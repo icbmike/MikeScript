@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace MikeScriptInterpreter
 {
@@ -6,7 +7,11 @@ namespace MikeScriptInterpreter
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            var fileName = args[0];
+
+            var scriptText = File.ReadAllText(fileName);
+
+            new Interpreter().Run(scriptText);
         }
     }
 }
