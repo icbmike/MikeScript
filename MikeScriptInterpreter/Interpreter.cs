@@ -23,7 +23,7 @@ namespace MikeScriptInterpreter
         {
             var tokens = Tokenizer.TokenizeLine(line).ToList();
 
-            var statement =  ParseStatement(tokens);
+            (var statement, _) =  ParseStatement(new Queue<IToken>(tokens));
 
             if(statement == null)
             {
@@ -33,45 +33,46 @@ namespace MikeScriptInterpreter
             return statement;
         }
 
-        private IStatement ParseStatement(IEnumerable<IToken> tokens)
+        private (IStatement statement, Queue<IToken> restOfQueue) ParseStatement(Queue<IToken> tokens)
         {
-            var token = tokens.First();
+            var token = tokens.Dequeue();
 
-            if(token.As<KeyWordToken>(out var keyWordToken))
+            if (token.As<KeyWordToken>(out var keyWordToken))
             {
-                if(keyWordToken.Value == KeyWord.print)
+                if (keyWordToken.Value == KeyWord.add)
                 {
-                    var nextStatement = ParseStatement(tokens.Skip(1));
+                    (var arg1, var restOfQueue) = ParseStatement(tokens);
+                    (var arg2, var restOfQueue2) = ParseStatement(restOfQueue);
 
-                    if(nextStatement is ExpressionStatement)
-                    {
-                        return new PrintStatement(nextStatement as ExpressionStatement);
-                    }
+                    return (new AddExpression((ExpressionStatement)arg1, (ExpressionStatement)arg2), restOfQueue2);
                 }
 
-                if(keyWordToken.Value == KeyWord.add)
+                if (keyWordToken.Value == KeyWord.mult)
                 {
-                    var arg1 = ParseStatement(tokens.Skip(1));
-                    var arg2 = ParseStatement(tokens.Skip(2));
+                    (var arg1, var restOfQueue) = ParseStatement(tokens);
+                    (var arg2, var restOfQueue2) = ParseStatement(restOfQueue);
 
-                    if (arg1 is ExpressionStatement && arg2 is ExpressionStatement)
-                    {
-                        return new AddExpression(arg1 as ExpressionStatement, arg2 as ExpressionStatement);
-                    }
+                    return (new MultiplyExpression((ExpressionStatement)arg1, (ExpressionStatement)arg2), restOfQueue2);
+                }
+
+                if (keyWordToken.Value == KeyWord.print)
+                {
+                    (var arg1, var restOfQueue) = ParseStatement(tokens);
+                    return (new PrintStatement((ExpressionStatement)arg1), restOfQueue);
                 }
             }
 
-            if(token.As<StringValueToken>(out var stringValueToken))
+            if (token.As<StringValueToken>(out var stringToken))
             {
-                return new StringLiteralExpression(stringValueToken);
+                return (new StringLiteralExpression(stringToken), tokens);
             }
 
-            if (token.As<NumberValueToken>(out var numberValueToken))
+            if (token.As<NumberValueToken>(out var numberToken))
             {
-                return new NumberLiteralExpression(numberValueToken);
+                return (new NumberLiteralExpression(numberToken), tokens);
             }
 
-            return null;
+            throw new Exception($"Unknown token type: {token.Type}");
         }
     }
 }

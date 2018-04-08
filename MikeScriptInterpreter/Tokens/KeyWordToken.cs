@@ -15,6 +15,7 @@
     public enum KeyWord
     {
         print,
-        add
+        add,
+        mult
     }
 }

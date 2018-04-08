@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.ValueTuple" Version="4.5.0-preview1-26216-02" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="test.ms">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
