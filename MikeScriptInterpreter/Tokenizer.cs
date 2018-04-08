@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MikeScriptInterpreter.Tokens;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -11,6 +12,7 @@ namespace MikeScriptInterpreter
             bool inString = false;
             bool inKeyWord = false;
             bool inNumber = false;
+            bool inSymbol = false;
             var sb = new StringBuilder();
 
             for (int i = 0; i < line.Length; i++)
@@ -59,6 +61,13 @@ namespace MikeScriptInterpreter
                         }
                     }
 
+                    if (inSymbol)
+                    {
+                        inSymbol = false;
+                        var text = sb.ToString();
+                        yield return new SymbolToken(text);
+                    }
+
                     sb.Clear();
                 }
 
@@ -71,6 +80,12 @@ namespace MikeScriptInterpreter
                 if (char.IsLetter(character))
                 {
                     inKeyWord = true;
+                    sb.Append(character);
+                }
+
+                if (character == '$')
+                {
+                    inSymbol = true;
                     sb.Append(character);
                 }
             }
@@ -93,6 +108,13 @@ namespace MikeScriptInterpreter
                 {
                     yield return new NumberValueToken(number);
                 }
+            }
+
+            if (inSymbol)
+            {
+                inSymbol = false;
+                var text = sb.ToString();
+                yield return new SymbolToken(text);
             }
 
             sb.Clear();

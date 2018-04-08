@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using MikeScriptInterpreter.Tokens;
+using System.Linq;
 using Xunit;
 
 namespace MikeScriptInterpreter.Tests
@@ -68,6 +69,28 @@ namespace MikeScriptInterpreter.Tests
             Assert.Equal(23, ((NumberValueToken)token1).Value);
             Assert.Equal(5, ((NumberValueToken)token2).Value);
             Assert.Equal(6788373, ((NumberValueToken)token3).Value);
+        }
+
+        [Fact]
+        public void symbols()
+        {
+            // Arrange
+            var line = "$x $y";
+
+            // Act
+            var tokens = Tokenizer.TokenizeLine(line).ToArray();
+
+            // Assert
+            Assert.Equal(2, tokens.Length);
+
+            var token1 = tokens[0];
+            var token2 = tokens[1];
+
+            Assert.Equal(TokenType.Symbol, token1.Type);
+            Assert.Equal(TokenType.Symbol, token2.Type);
+
+            Assert.Equal("$x", ((SymbolToken)token1).SymbolText);
+            Assert.Equal("$y", ((SymbolToken)token2).SymbolText);
         }
     }
 }

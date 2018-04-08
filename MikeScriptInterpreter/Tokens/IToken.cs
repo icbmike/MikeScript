@@ -9,7 +9,8 @@
     {
         KeyWord,
         StringValue,
-        NumberValue
+        NumberValue,
+        Symbol
     }
 
     public static class ITokenExtensions

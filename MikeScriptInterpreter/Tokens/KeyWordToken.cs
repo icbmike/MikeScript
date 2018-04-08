@@ -16,6 +16,7 @@
     {
         print,
         add,
-        mult
+        mult,
+        assign
     }
 }
